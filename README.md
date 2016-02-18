@@ -8,11 +8,8 @@ Use this button to create a fun UI ~
 
 <br/>
 
-<img src="https://rawgit.com/bonghyun2/jelly-direction-button/master/screenshots/Screenshot_button_normal.png" width = 200/>
+<img src="https://rawgit.com/bonghyun2/jelly-direction-button/master/screenshots/Screenshot_button.gif" width = 200/>
 
-<img src="https://rawgit.com/bonghyun2/jelly-direction-button/master/screenshots/Screenshot_button_down.png" width = 200/>
-
-<img src="https://rawgit.com/bonghyun2/jelly-direction-button/master/screenshots/Screenshot_button_up.png" width = 200/>
 
 ##Usage
 
