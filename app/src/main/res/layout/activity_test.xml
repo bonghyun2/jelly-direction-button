@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,10 +9,25 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/color_bg"
     tools:context="com.bnystudio.jellydirectionbutton.TestActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"/>
+    <com.bnystudio.library.jellydirectionbutton.JellyDirectionButtonLayout
+        android:id="@+id/btn_test"
+        android:layout_width="150dp"
+        android:layout_height="300dp"
+        app:jellyDownColor="@color/jelly_down"
+        app:jellyNormalColor="@color/jelly_normal"
+        app:jellyUpColor="@color/jelly_up"
+        android:layout_centerInParent="true">
+
+        <ToggleButton
+            android:id="@+id/btn_play"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/btn_play_selector"
+            android:textOff=""
+            android:textOn="" />
+
+    </com.bnystudio.library.jellydirectionbutton.JellyDirectionButtonLayout>
 </RelativeLayout>

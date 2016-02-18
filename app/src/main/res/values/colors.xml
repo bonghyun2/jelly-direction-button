@@ -3,4 +3,10 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="color_bg">#666666</color>
+    <color name="jelly_normal">#ffffff</color>
+    <color name="jelly_down">#f3c08a</color>
+    <color name="jelly_up">#86c2be</color>
+
 </resources>

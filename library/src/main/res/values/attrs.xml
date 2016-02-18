@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="JellyDirectionButtonLayout">
+        <attr name="jellyNormalColor" format="color" />
+        <attr name="jellyUpColor" format="color" />
+        <attr name="jellyDownColor" format="color" />
+    </declare-styleable>
+</resources>
