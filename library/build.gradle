@@ -1,4 +1,16 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    userOrg = 'bonghyun2'
+    groupId = 'com.bnystudio'
+    artifactId = 'jelly-direction-button'
+    publishVersion = '0.1.0'
+    desc = ''
+    website = 'https://github.com/bonghyun2/jelly-direction-button'
+    issueTracker = "${website}/issues"
+    repository = "${website}.git"
+}
 
 android {
     compileSdkVersion 23
