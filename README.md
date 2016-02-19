@@ -13,6 +13,12 @@ Use this button to create a fun UI ~
 
 ##Usage
 
+	dependencies {
+	    compile 'com.bnystudio:jelly-direction-button:0.1.0'
+	}
+
+<br/>
+
 	public class TestActivity extends AppCompatActivity {
 	
 	    private JellyDirectionButtonLayout mButton;
