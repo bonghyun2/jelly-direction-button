@@ -12,12 +12,14 @@ Use this button to create a fun UI ~
 
 
 ##Usage
+####build.gradle(Module:app)
 
 	dependencies {
 	    compile 'com.bnystudio:jelly-direction-button:0.1.0'
 	}
 
 <br/>
+####Activity
 
 	public class TestActivity extends AppCompatActivity {
 	
@@ -45,6 +47,23 @@ Use this button to create a fun UI ~
 	        });
 	    }
 	}
+
+####layout.xml
+	<com.bnystudio.library.jellydirectionbutton.JellyDirectionButtonLayout
+	        android:id="@+id/btn_test"
+	        android:layout_width="50dp"
+	        android:layout_height="150dp"
+	        android:layout_centerInParent="true">
+	
+	        <ToggleButton
+	            android:id="@+id/btn_play"
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:background="@drawable/btn_play_selector"
+	            android:textOff=""
+	            android:textOn="" />
+
+	<com.bnystudio.library.jellydirectionbutton.JellyDirectionButtonLayout>
 
 ##License
 
