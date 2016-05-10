@@ -4,5 +4,11 @@
         <attr name="jellyNormalColor" format="color" />
         <attr name="jellyUpColor" format="color" />
         <attr name="jellyDownColor" format="color" />
+        <attr name="jellyRightColor" format="color" />
+        <attr name="jellyLeftColor" format="color" />
+        <attr name="jellyOrientation">
+            <flag name="horizotal" value="0x0001"/>
+            <flag name="vertical" value="0x0002"/>
+        </attr>
     </declare-styleable>
 </resources>

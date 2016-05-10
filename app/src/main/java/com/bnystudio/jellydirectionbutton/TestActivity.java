@@ -3,6 +3,7 @@ package com.bnystudio.jellydirectionbutton;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.bnystudio.library.jellydirectionbutton.JellyDirectionButtonLayout;
 
@@ -21,12 +22,16 @@ public class TestActivity extends AppCompatActivity {
 
             @Override
             public void onReadyClick(JellyDirectionButtonLayout jellyDirectionButtonLayout, int direction, boolean isActiveState, float fraction) {
-                Log.d("BB", "onClick :: direction :: " + direction + ", isActiveState :: " + isActiveState + ", fraction :: " + fraction);
+                String debugStr = "onClick :: direction :: " + direction + ", isActiveState :: " + isActiveState + ", fraction :: " + fraction;
+                Log.d("BB", debugStr);
+//                Toast.makeText(TestActivity.this, debugStr, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onClick(JellyDirectionButtonLayout jellyDirectionButtonLayout, int direction) {
-                Log.d("BB", "onClick :: direction :: " + direction);
+                String debugStr = "onClick :: direction :: " + direction;
+                Log.d("BB", debugStr);
+                Toast.makeText(TestActivity.this, debugStr, Toast.LENGTH_SHORT).show();
                 mButton.setClickFinish();
             }
         });

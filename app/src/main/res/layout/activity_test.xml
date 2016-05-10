@@ -14,11 +14,14 @@
 
     <com.bnystudio.library.jellydirectionbutton.JellyDirectionButtonLayout
         android:id="@+id/btn_test"
-        android:layout_width="150dp"
-        android:layout_height="300dp"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         app:jellyDownColor="@color/jelly_down"
         app:jellyNormalColor="@color/jelly_normal"
         app:jellyUpColor="@color/jelly_up"
+        app:jellyLeftColor="@color/jelly_down"
+        app:jellyRightColor="@color/jelly_up"
+        app:jellyOrientation="vertical|horizotal"
         android:layout_centerInParent="true">
 
         <ToggleButton

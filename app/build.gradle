@@ -6,17 +6,19 @@ android {
 
     defaultConfig {
         applicationId "com.bnystudio.jellydirectionbutton"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 23
-        versionCode 1
+        versionCode 100
         versionName "1.0"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            debuggable false // debugging 허용 안함
+            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {

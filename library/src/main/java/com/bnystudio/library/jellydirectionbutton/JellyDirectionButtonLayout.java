@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -22,14 +23,20 @@ import android.widget.FrameLayout;
  * Created by Bonghyun on 2015-12-20.
  */
 public class JellyDirectionButtonLayout extends FrameLayout {
-    public static final int SWIPE_TO_NONE = 0;
-    public static final int SWIPE_TO_DOWN = -1;
-    public static final int SWIPE_TO_UP = 1;
+    protected static final int MASK_DIRECTION = 0xff00;
+    public static final int SWIPE_TO_NONE = 0x0000;
+    public static final int SWIPE_TO_DOWN = 0x0100;
+    public static final int SWIPE_TO_UP = 0x0200;
+    public static final int SWIPE_TO_RIGHT = 0x0400;
+    public static final int SWIPE_TO_LEFT = 0x0800;
 
-    protected static final int ANIMATION_DURATION = 200;
-    protected static final float ACTIVE_Y = 10;
+    protected static final int MASK_ORIENTATION = 0x00ff;
+    protected static final int ORIENTATION_NONE = 0x0000;
+    protected static final int ORIENTATION_HORIZONTAL = 0x0001;
+    protected static final int ORIENTATION_VERTICAL = 0x0002;
 
-
+    protected static final float ACTIVE_Y = 30;
+    protected static final float ACTIVE_X = 30;
 
     protected DecelerateInterpolator mDecelerateInterpolator;
     protected ArgbEvaluator mColorEvaluator;
@@ -37,6 +44,8 @@ public class JellyDirectionButtonLayout extends FrameLayout {
 
     protected JellyDirectionLayout mJellyDirectionLayout;
 
+    protected int mPermittedOrientation = ORIENTATION_NONE;
+    protected int mOrientation = ORIENTATION_NONE;
     protected int mDirection = SWIPE_TO_NONE;
     protected int mPrevDirection = SWIPE_TO_NONE;
     protected boolean mIsLock;
@@ -46,11 +55,16 @@ public class JellyDirectionButtonLayout extends FrameLayout {
     protected int mNormalColor;
     protected int mUpColor;
     protected int mDownColor;
+    protected int mRightColor;
+    protected int mLeftColor;
+    protected float mTouchStartX;
+    protected float mCurrentX;
     protected float mTouchStartY;
     protected float mCurrentY;
     protected OnJellyClickListener mJellyClickListener;
 
     protected View mChildView;
+
 
     public JellyDirectionButtonLayout(Context context) {
         super(context);
@@ -86,6 +100,11 @@ public class JellyDirectionButtonLayout extends FrameLayout {
                     resources.getColor(android.R.color.holo_blue_bright));
             mUpColor = a.getColor(R.styleable.JellyDirectionButtonLayout_jellyUpColor,
                     resources.getColor(android.R.color.holo_blue_bright));
+            mRightColor = a.getColor(R.styleable.JellyDirectionButtonLayout_jellyRightColor,
+                    resources.getColor(android.R.color.holo_blue_bright));
+            mLeftColor = a.getColor(R.styleable.JellyDirectionButtonLayout_jellyLeftColor,
+                    resources.getColor(android.R.color.holo_blue_bright));
+            mPermittedOrientation = a.getInteger(R.styleable.JellyDirectionButtonLayout_jellyOrientation, ORIENTATION_NONE);
         } finally {
             a.recycle();
         }
@@ -109,12 +128,13 @@ public class JellyDirectionButtonLayout extends FrameLayout {
         this.post(new Runnable() {
             @Override
             public void run() {
+                int defaultRadius = (int) getDefaultRadius();
                 mChildView = getChildAt(0);
                 mJellyDirectionLayout = new JellyDirectionLayout(getContext());
-                LayoutParams params = new LayoutParams(getMeasuredWidth(), getMeasuredHeight() / 3);
+                LayoutParams params = new LayoutParams(defaultRadius*2 , defaultRadius*2);
                 params.gravity = Gravity.CENTER;
                 mJellyDirectionLayout.setLayoutParams(params);
-                mJellyDirectionLayout.setDefaultRadius(getMeasuredHeight() / 6);
+                mJellyDirectionLayout.setDefaultRadius(getDefaultRadius());
                 mJellyDirectionLayout.setJellyColor(mNormalColor);
                 addView(mJellyDirectionLayout);
                 setChildSize();
@@ -124,6 +144,20 @@ public class JellyDirectionButtonLayout extends FrameLayout {
 
             }
         });
+    }
+
+    private float getDefaultRadius() {
+        float ret = 0.f;
+        float offsetX = Math.min(getMeasuredWidth() / 6, getMeasuredHeight() / 2);
+        float offsetY = Math.min(getMeasuredWidth() / 2 , getMeasuredHeight() / 6);
+        if(mPermittedOrientation == ORIENTATION_HORIZONTAL) {
+            ret = offsetX;
+        }else if(mPermittedOrientation == ORIENTATION_VERTICAL) {
+            ret = offsetY;
+        }else if(mPermittedOrientation == (ORIENTATION_VERTICAL | ORIENTATION_HORIZONTAL)) {
+            ret = Math.min(offsetX, offsetY);
+        }
+        return ret;
     }
 
     private void setChildSize() {
@@ -138,7 +172,6 @@ public class JellyDirectionButtonLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
-//        Log.d("TouchTest", "Pull :: onInterceptTouchEvent :: " + e.getAction());
         if(mIsLock) {
             return false;
         }
@@ -148,7 +181,10 @@ public class JellyDirectionButtonLayout extends FrameLayout {
         }
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                mTouchStartX = e.getX();
                 mTouchStartY = e.getY();
+
+                mCurrentX = mTouchStartX;
                 mCurrentY = mTouchStartY;
                 if(mReturnAnimation != null) {
                     mReturnAnimation.cancel();
@@ -157,9 +193,19 @@ public class JellyDirectionButtonLayout extends FrameLayout {
                 mPrevIsActivate = false;
                 break;
             case MotionEvent.ACTION_MOVE:
+                float currentX = e.getX();
                 float currentY = e.getY();
+
+                float dx = currentX - mTouchStartX;
                 float dy = currentY - mTouchStartY;
-                if(Math.abs(dy) > ACTIVE_Y) {
+
+                if(Math.abs(dy) > ACTIVE_Y && (mPermittedOrientation & ORIENTATION_VERTICAL) == ORIENTATION_VERTICAL ) {
+                    mOrientation = ORIENTATION_VERTICAL;
+                    mJellyDirectionLayout.setmOrientation(JellyDirectionLayout.VERTICAL);
+                    return true;
+                }else if(Math.abs(dx) > ACTIVE_X && (mPermittedOrientation & ORIENTATION_HORIZONTAL) == ORIENTATION_HORIZONTAL) {
+                    mOrientation = ORIENTATION_HORIZONTAL;
+                    mJellyDirectionLayout.setmOrientation(JellyDirectionLayout.HORIENTAL);
                     return true;
                 }
                 break;
@@ -176,28 +222,42 @@ public class JellyDirectionButtonLayout extends FrameLayout {
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
-
+                float diff =0;
+                mCurrentX = e.getX();
                 mCurrentY = e.getY();
-                float maxValue = getMeasuredHeight()/3;
-                float dy = MathUtils.constrains(
-                        mCurrentY - mTouchStartY,
-                        maxValue);
+                float maxValue = 0.f;
                 mPrevDirection = mDirection;
-                if (dy > 0) {
-                    mDirection = SWIPE_TO_DOWN;
-                }else {
-                    mDirection = SWIPE_TO_UP;
+                if(mOrientation == ORIENTATION_HORIZONTAL) {
+                    maxValue = getMeasuredWidth()/3;
+                    diff = MathUtils.constrains(
+                            mCurrentX - mTouchStartX,
+                            maxValue);
+                    if (diff > 0) {
+                        mDirection = SWIPE_TO_RIGHT;
+                    }else {
+                        mDirection = SWIPE_TO_LEFT;
+                    }
+                }else{
+                    maxValue = getMeasuredHeight()/3;
+                    diff = MathUtils.constrains(
+                            mCurrentY - mTouchStartY,
+                            maxValue);
+                    if (diff > 0) {
+                        mDirection = SWIPE_TO_DOWN;
+                    }else {
+                        mDirection = SWIPE_TO_UP;
+                    }
                 }
 
-                float offsetY = mDecelerateInterpolator.getInterpolation(Math.abs(dy) / (getMeasuredHeight() / 3)) * dy;
-                float fraction = offsetY / maxValue;
+                float offset = mDecelerateInterpolator.getInterpolation(Math.abs(diff) / maxValue) * diff;
+                float fraction = offset / maxValue;
                 updateButtonColor(fraction, mDirection);
 
                 if (mJellyDirectionLayout != null) {
-                    updateJellyDirectionLayout(offsetY, false);
+                    updateJellyDirectionLayout(offset, false);
                 }
                 mPrevIsActivate = mIsActivate;
-                mIsActivate = (Math.abs(offsetY) > maxValue / 2);
+                mIsActivate = (Math.abs(offset) > maxValue / 2);
                 if(mJellyClickListener != null && (mPrevIsActivate != mIsActivate || mPrevDirection != mDirection)) {
                     mJellyClickListener.onReadyClick(this, mDirection, mIsActivate, fraction);
                 }
@@ -212,8 +272,8 @@ public class JellyDirectionButtonLayout extends FrameLayout {
         }
     }
 
-    protected float getButtonRadius(float offsetY) {
-        return mJellyDirectionLayout.getDefaultRadius() - Math.abs((float)(offsetY * 0.1));
+    protected float getButtonRadius(float offset) {
+        return mJellyDirectionLayout.getDefaultRadius() - Math.abs((float)(offset * 0.1));
     }
 
     private void updateButtonColor(float fraction, int direction) {
@@ -238,14 +298,14 @@ public class JellyDirectionButtonLayout extends FrameLayout {
     }
 
     private void returnStartPosition() {
-        mReturnAnimation = ValueAnimator.ofFloat(mJellyDirectionLayout.getPullHeight(), 0f);
+        mReturnAnimation = ValueAnimator.ofFloat(mJellyDirectionLayout.getPullDistance(), 0f);
         mReturnAnimation.setDuration(100);
         mReturnAnimation.setInterpolator(new OvershootInterpolator(2));
         mReturnAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float value = (float) animation.getAnimatedValue();
-                updateButtonColor(value / (getMeasuredHeight() / 4), mDirection);
+                updateButtonColor(value / mJellyDirectionLayout.getDefaultRadius() , mDirection);
                 updateJellyDirectionLayout(value, false);
 
             }
@@ -274,10 +334,10 @@ public class JellyDirectionButtonLayout extends FrameLayout {
         mReturnAnimation.start();
     }
 
-    public void updateJellyDirectionLayout(float offsetY, boolean isIdle) {
-        float radius = getButtonRadius(offsetY);
+    public void updateJellyDirectionLayout(float offset, boolean isIdle) {
+        float radius = getButtonRadius(offset);
         mJellyDirectionLayout.setRadius(radius);
-        mJellyDirectionLayout.setPullHeight(offsetY);
+        mJellyDirectionLayout.setPullDistance(offset);
         setChildSize();
         if(mChildView == null) {
             mJellyDirectionLayout.postInvalidate();
@@ -288,13 +348,14 @@ public class JellyDirectionButtonLayout extends FrameLayout {
     }
 
     public void setJellyDirectionLayoutSize(boolean isIdle) {
-        int width = getMeasuredWidth();
-        int height = getMeasuredHeight();
+        float width = getMeasuredWidth();
+        float height = getMeasuredHeight();
         if(isIdle) {
-            height /= 3;
+            width = getDefaultRadius() * 2;
+            height = getDefaultRadius() * 2;
         }
-        mJellyDirectionLayout.getLayoutParams().width = width;
-        mJellyDirectionLayout.getLayoutParams().height = height;
+        mJellyDirectionLayout.getLayoutParams().width = (int)width;
+        mJellyDirectionLayout.getLayoutParams().height = (int)height;
         mJellyDirectionLayout.requestLayout();
     }
 
@@ -312,6 +373,14 @@ public class JellyDirectionButtonLayout extends FrameLayout {
 
     public void setDownColor(int downColor) {
         this.mDownColor = downColor;
+    }
+
+    public void setRightColor(int rightColor) {
+        this.mRightColor = rightColor;
+    }
+
+    public void setLeftColor(int leftColor) {
+        this.mLeftColor = leftColor;
     }
 
     public void lock() {
