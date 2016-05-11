@@ -1,7 +1,7 @@
 # JellyDirectionButton
 ---
 This button is a button on the growing sense up / down.
-By placing a middle toggle button it can be used to distinguish the toggle + up / down.
+By placing a middle toggle button it can be used to distinguish the toggle + up/down/right/left(4ways).
 Use this button to create a fun UI ~
 
 ##ScreenShot
