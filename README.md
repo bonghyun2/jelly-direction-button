@@ -10,6 +10,10 @@ Use this button to create a fun UI ~
 
 <img src="https://rawgit.com/bonghyun2/jelly-direction-button/master/screenshots/Screenshot_button.gif" width = 200/>
 
+##sample application
+
+<br/>
+    https://play.google.com/store/apps/details?id=com.bnystudio.jellydirectionbutton
 
 ##Usage
 ####build.gradle(Module:app)
