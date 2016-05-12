@@ -6,20 +6,17 @@ Use this button to create a fun UI ~
 
 ##ScreenShot
 
-<br/>
-
 <img src="https://rawgit.com/bonghyun2/jelly-direction-button/master/screenshots/Screenshot_button.gif" width = 200/>
 
 ##sample application
 
-<br/>
     https://play.google.com/store/apps/details?id=com.bnystudio.jellydirectionbutton
 
 ##Usage
 ####build.gradle(Module:app)
 
 	dependencies {
-	    compile 'com.bnystudio:jelly-direction-button:0.1.0'
+	    compile 'com.bnystudio:jelly-direction-button:0.1.1'
 	}
 
 <br/>
